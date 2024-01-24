@@ -1,0 +1,2842 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 9.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[    130428,       2833]
+NotebookOptionsPosition[    124439,       2674]
+NotebookOutlinePosition[    124793,       2690]
+CellTagsIndexPosition[    124750,       2687]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ClearAll", "[", "\"\<Global`*\>\"", "]"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"single", " ", "tax", " ", "on", " ", "gasoline"}], ",", " ", 
+    RowBox[{"zero", " ", "tax", " ", "on", " ", "electricity"}]}], " ", 
+   "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Find", " ", "optimal", " ", "taxes", " ", "for", " ", "each", " ", 
+    "county"}], " ", "*)"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"INPUT", " ", "PARAMETERS"}], " ", "*)"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Convert", " ", "2013", " ", "dollars", " ", "to", " ", "2000", " ", 
+    "dollars"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"Use", " ", "CPI", " ", "data", " ", 
+     RowBox[{"http", ":"}]}], "//", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"www", ".", "bls", ".", "gov"}], "/", "data"}], "/", 
+     RowBox[{"inflation_calculator", ".", "htm"}]}]}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"New", " ", 
+    RowBox[{
+     RowBox[{"2", "/", "2"}], "/", "2015."}], " ", "Convert", " ", 
+    "everyting", " ", "to", " ", "2014", " ", "dollars"}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"So", " ", "CPI"}], " ", "=", " ", "1.02"}], " ", "*)"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"cpi", "=", " ", "1.02"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"Dollars", " ", "to", " ", "hour", " ", "conversion"}], " ", 
+   "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"Equal", " ", "to", " ", "price", " ", "of", " ", "time", " ", 
+    RowBox[{"(", 
+     RowBox[{"wage", " ", "rate"}], ")"}]}], "*)"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"c", "=", "1"}], " ", ";"}], " ", "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Damages", " ", "per", " ", "mile", " ", "across", " ", "regions"}], " ", 
+   "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"Input", " ", "from", " ", "Spreadsheet"}], "          ", "*)"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{" ", 
+  RowBox[{"SetDirectory", "[", "\"\<\>\"", "]"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "Input", " ", "values", " ", "for", " ", "mu", " ", "and", " ", "A", " ", 
+    "from", " ", "calibration"}], " ", "*)"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"muanda", "=", 
+    RowBox[{"Import", "[", 
+     RowBox[{"\"\<calibrate parms.xlsx\>\"", ",", 
+      RowBox[{"{", 
+       RowBox[{"\"\<Data\>\"", ",", "1"}], "}"}]}], "]"}]}], ";"}], 
+  " "}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"theas", "=", 
+   RowBox[{
+    RowBox[{"Transpose", "[", "muanda", "]"}], "[", 
+    RowBox[{"[", "1", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"themus", "=", 
+   RowBox[{
+    RowBox[{"Transpose", "[", "muanda", "]"}], "[", 
+    RowBox[{"[", "2", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"nummus", "=", 
+    RowBox[{"Length", "[", "theas", "]"}]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{"which", " ", "mu", " ", "to", " ", "use"}], " ", "*)"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   RowBox[{
+    RowBox[{"either", " ", "1"}], ",", 
+    RowBox[{"2", " ", "or", " ", "3"}]}], " ", "*)"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{"For", "[", 
+  RowBox[{
+   RowBox[{"index", "=", "1"}], ",", 
+   RowBox[{"index", "\[LessEqual]", "nummus"}], ",", 
+   RowBox[{"index", "++"}], ",", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Clear", "[", 
+     RowBox[{
+     "thedatin", ",", "thedat", ",", "weight", ",", "\[Delta]gv", ",", 
+      "\[Delta]ev", ",", "m", ",", " ", "Sv", ",", "Rv", ",", "s", ",", "R", 
+      ",", "gv", ",", "eev", ",", "xgv", ",", "xev", ",", "Lgv", ",", "Lev", 
+      ",", "Wv", ",", "piv", ",", "Welfv", ",", "soptv", ",", "singlev", ",", 
+      "optwel", ",", "singwel", ",", "piprodsingle", ",", "pisingle", ",", 
+      "exact", ",", "Tgv", ",", "Tev", ",", "tg", ",", "te", ",", "tgoptv", 
+      ",", "teoptv", ",", "singletg", ",", "singlete", ",", "bestt", ",", 
+      "optwel", ",", "gastaxv", ",", "welregion", ",", "temp", ",", "welone", 
+      ",", "gtax", ",", "welonetax", ",", "ansr"}], "]"}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"munum", "=", "index"}], ";", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+     "county", " ", "data", " ", "missing", " ", "value", " ", "for", " ", 
+      "clifton", " ", "forge", " ", "va"}], " ", "*)"}], 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"give", " ", "it", " ", "zero"}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"thedatin", "=", 
+     RowBox[{"Import", "[", 
+      RowBox[{"\"\<C-county_full.xlsx\>\"", ",", 
+       RowBox[{"{", 
+        RowBox[{"\"\<Data\>\"", ",", "1"}], "}"}]}], "]"}]}], ";", " ", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"get", " ", "rid", " ", "of", " ", "column", " ", "labels"}], 
+     " ", "*)"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"thedat", "=", 
+     RowBox[{"Drop", "[", 
+      RowBox[{"thedatin", ",", "1"}], "]"}]}], ";", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"weight", " ", "=", " ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Transpose", "[", "thedat", "]"}], "[", 
+       RowBox[{"[", "7", "]"}], "]"}], "/", 
+      RowBox[{"Total", " ", "[", 
+       RowBox[{
+        RowBox[{"Transpose", "[", "thedat", "]"}], "[", 
+        RowBox[{"[", "7", "]"}], "]"}], "]"}]}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"1", "/", "30"}], "/", "15"}], "   ", "data", " ", "is", " ", 
+       "now", " ", "in", " ", "cents", " ", "per", " ", "mile"}], ",", " ", 
+      RowBox[{"convert", " ", "to", " ", "dollars"}]}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"\[Delta]gv", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"Transpose", "[", "thedat", "]"}], "[", 
+        RowBox[{"[", "5", "]"}], "]"}], "/", "c"}], "/", "100"}]}], ";", " ", 
+    
+    RowBox[{"(*", 
+     RowBox[{"damages", " ", "per", " ", "mile", " ", "gas"}], " ", "*)"}], 
+    "\[IndentingNewLine]", 
+    RowBox[{"\[Delta]ev", " ", "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"Transpose", "[", "thedat", "]"}], "[", 
+        RowBox[{"[", "6", "]"}], "]"}], "/", "c"}], "/", "100"}]}], ";", " ", 
+    
+    RowBox[{"(*", 
+     RowBox[{"damages", " ", "per", " ", "mile", " ", "electric"}], " ", 
+     "*)"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"Print", "[", "thedat", "]"}], "*)"}], "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"Number", " ", "of", " ", "Regions"}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"m", "=", 
+     RowBox[{"Length", "[", "\[Delta]gv", "]"}]}], ";", "\[IndentingNewLine]",
+     "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+      RowBox[{"weight", "=", 
+       RowBox[{"ConstantArray", "[", 
+        RowBox[{
+         RowBox[{"1", "/", "m"}], ",", "m"}], "]"}]}], ";"}], "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"Calibrated", " ", "Parameters"}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"pt", "  ", "Price", " ", "of", " ", "time"}], " ", "*)"}], 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"p", "   ", "Price", " ", "of", " ", "electric", " ", "car"}], 
+     " ", "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"pc", "  ", "Price", " ", "of", " ", "gas", " ", "gar"}], " ", 
+     "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"pg", "  ", "Price", " ", "of", " ", "gas"}], " ", "*)"}], 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"pe", "  ", "Price", " ", "of", " ", "electricity"}], " ", 
+     "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"T", "   ", "Endowment", " ", "of", " ", "time"}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+     "\[Mu]", "   ", "Variance", " ", "of", " ", "random", " ", "variables"}],
+      "  ", "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"\[Gamma]g", "  ", "Gas", " ", "preference", " ", "parameter"}], 
+     " ", "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+     "\[Gamma]e", "  ", "Electric", " ", "Preference", " ", "parameter"}], 
+     " ", "*)"}], "\[IndentingNewLine]", " ", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{"pt", "=", "1"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"p", "=", 
+     RowBox[{"35170", "*", 
+      RowBox[{"cpi", "/", "c"}]}]}], ";", " ", "\[IndentingNewLine]", 
+    RowBox[{"pc", "=", 
+     RowBox[{"16810", "*", 
+      RowBox[{"cpi", "/", "c"}]}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"pe", "=", 
+     RowBox[{"0.0389052", " ", "*", 
+      RowBox[{"cpi", "/", "c"}]}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"pg", "=", 
+     RowBox[{"0.1125", "*", 
+      RowBox[{"cpi", "/", "c"}]}]}], ";", "\[IndentingNewLine]", " ", 
+    RowBox[{"T", "=", " ", 
+     RowBox[{
+     "10", " ", "*", " ", "52", " ", "*", " ", "827", " ", "*", "cpi"}]}], 
+    ";", "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"\[Gamma]g", "=", "2"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"\[Gamma]e", "=", "2"}], ";", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"lifetime", " ", "miles"}], " ", "*)"}], "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"lm", "=", "150000"}], ";", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+      RowBox[{"pick", " ", "kg"}], ",", " ", 
+      RowBox[{
+      "ke", " ", "such", " ", "that", " ", "consumer", " ", "selects", " ", 
+       "150000", " ", "miles"}]}], " ", "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"in", " ", "BAU"}], " ", "*)"}], "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{"kg", "=", " ", 
+     RowBox[{"pg", " ", 
+      RowBox[{"lm", "^", "\[Gamma]g"}]}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"ke", "=", 
+     RowBox[{"pe", " ", 
+      RowBox[{"lm", "^", "\[Gamma]e"}]}]}], ";", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"\[Mu]", "=", 
+     RowBox[{"themus", "[", 
+      RowBox[{"[", "munum", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"A", "=", 
+     RowBox[{"theas", "[", 
+      RowBox[{"[", "munum", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"VECTOR", " ", "VARIABLES"}], " ", "*)"}], "\[IndentingNewLine]",
+     "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+      RowBox[{"Generic", " ", "Tax", " ", "On", " ", "Gas"}], ",", " ", 
+      "Electricity"}], " ", "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"Tgv", "=", 
+     RowBox[{"Array", "[", 
+      RowBox[{"tg", ",", "m"}], "]"}]}], ";", "    ", "\[IndentingNewLine]", 
+    RowBox[{"Tev", "=", 
+     RowBox[{"Array", "[", 
+      RowBox[{"te", ",", "m"}], "]"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"Goverment", " ", "Revenue"}], " ", "*)"}], 
+    "\[IndentingNewLine]", "     ", "\[IndentingNewLine]", 
+    RowBox[{"Rv", " ", "=", 
+     RowBox[{"Array", "[", 
+      RowBox[{"R", ",", "m"}], "]"}]}], " ", ";", "          ", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+      RowBox[{"CONSUMER", "'"}], "S", " ", "WELFARE", " ", "MAXIMIZING", " ", 
+      "PROBLEM"}], " ", "*)"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    
+    RowBox[{"(*", " ", 
+     RowBox[{
+     "Problem", " ", "given", " ", "here", " ", "for", " ", "reference"}], 
+     " ", "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"Use", " ", "solution", " ", "directly"}], "            ", 
+     "*)"}], "\[IndentingNewLine]", "\[IndentingNewLine]", " ", 
+    RowBox[{"(*", 
+     RowBox[{"Ug", "=", 
+      RowBox[{
+       RowBox[{"x", " ", "+", " ", 
+        RowBox[{
+         RowBox[{"g", "^", 
+          RowBox[{"(", "\[Gamma]g", ")"}]}], " ", "\[IndentingNewLine]", " ", 
+         "Ue"}]}], " ", "=", 
+       RowBox[{
+        RowBox[{"x", "+", " ", 
+         RowBox[{
+          RowBox[{"ee", "^", 
+           RowBox[{"(", "\[Gamma]e", ")"}]}], "\[IndentingNewLine]", 
+          "\[IndentingNewLine]", " ", "Lg"}]}], " ", "=", " ", 
+        RowBox[{
+         RowBox[{"Ug", " ", "-", " ", 
+          RowBox[{"\[Lambda]", " ", 
+           RowBox[{"(", 
+            RowBox[{
+             RowBox[{"pt", " ", "x"}], " ", "+", " ", 
+             RowBox[{
+              RowBox[{"(", 
+               RowBox[{"pg", "+", "tg"}], ")"}], "g"}], "  ", "-", " ", 
+             RowBox[{"pt", " ", "T"}], "+", " ", "pc", "-", " ", "R"}], ")"}],
+            "\[IndentingNewLine]", "ansg"}]}], "=", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Solve", "[", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{
+                RowBox[{"D", "[", 
+                 RowBox[{"Lg", ",", "x"}], "]"}], "\[Equal]", "0"}], ",", 
+               RowBox[{
+                RowBox[{"D", "[", 
+                 RowBox[{"Lg", ",", "g"}], "]"}], "\[Equal]", "0"}], ",", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"pt", " ", "x"}], " ", "+", " ", 
+                 RowBox[{
+                  RowBox[{"(", 
+                   RowBox[{"pg", " ", "+", "tg"}], ")"}], " ", "g"}], " ", 
+                 "-", " ", 
+                 RowBox[{"pt", " ", "T"}], "+", "pc", " ", "-", "R"}], 
+                "\[Equal]", "0"}]}], "}"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"x", ",", "g", ",", "\[Lambda]"}], "}"}]}], "]"}], " ", 
+           "\[IndentingNewLine]", "Vg"}], "=", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"Simplify", "[", 
+              RowBox[{"Ug", "/.", "ansg"}], "]"}], "[", 
+             RowBox[{"[", "1", "]"}], "]"}], "\[IndentingNewLine]", 
+            "\[IndentingNewLine]", " ", "Le"}], " ", "=", " ", 
+           RowBox[{
+            RowBox[{"Ue", " ", "-", " ", 
+             RowBox[{"\[Lambda]", " ", 
+              RowBox[{"(", 
+               RowBox[{
+                RowBox[{"pt", " ", "x"}], " ", "+", " ", 
+                RowBox[{
+                 RowBox[{"(", 
+                  RowBox[{"pe", "+", "te"}], ")"}], "ee"}], " ", "-", " ", 
+                RowBox[{"pt", " ", "T"}], "+", " ", "p", "+", " ", "s", " ", 
+                "-", "R"}], ")"}], "\[IndentingNewLine]", "anse"}]}], "=", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Solve", "[", 
+               RowBox[{
+                RowBox[{"{", 
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{"D", "[", 
+                    RowBox[{"Le", ",", "x"}], "]"}], "\[Equal]", "0"}], ",", 
+                  RowBox[{
+                   RowBox[{"D", "[", 
+                    RowBox[{"Le", ",", "ee"}], "]"}], "\[Equal]", "0"}], ",", 
+                  
+                  RowBox[{
+                   RowBox[{
+                    RowBox[{"pt", " ", "x"}], " ", "+", " ", 
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"pe", " ", "+", "te"}], ")"}], " ", "ee"}], " ", 
+                    "-", " ", 
+                    RowBox[{"pt", " ", "T"}], "+", "p", " ", "+", "s", " ", 
+                    "-", "R"}], "\[Equal]", "0"}]}], "}"}], ",", 
+                RowBox[{"{", 
+                 RowBox[{"x", ",", "ee", ",", "\[Lambda]"}], "}"}]}], "]"}], 
+              " ", "\[IndentingNewLine]", "Ve"}], "=", 
+             RowBox[{
+              RowBox[{"Simplify", "[", 
+               RowBox[{"Ue", "/.", "anse"}], "]"}], "[", 
+              RowBox[{"[", "1", "]"}], "]"}]}]}]}]}]}]}]}]}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"x", ",", " ", 
+      RowBox[{
+      "g", " ", "and", " ", "e", " ", "as", " ", "a", " ", "function", " ", 
+       "of", " ", "the", " ", "parameters"}]}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"gv", "=", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"pt", " ", "kg"}], ")"}], "/", 
+        RowBox[{"(", 
+         RowBox[{"pg", "+", "Tgv"}], ")"}]}], " ", ")"}], "^", 
+      RowBox[{"(", 
+       RowBox[{"1", "/", "\[Gamma]g"}], ")"}]}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"eev", "=", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"pt", " ", "ke"}], ")"}], "/", 
+        RowBox[{"(", 
+         RowBox[{"pe", "+", "Tev"}], ")"}]}], " ", ")"}], "^", 
+      RowBox[{"(", 
+       RowBox[{"1", "/", "\[Gamma]e"}], ")"}]}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"xgv", "=", " ", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"-", "pc"}], " ", "+", " ", "Rv", " ", "+", " ", 
+        RowBox[{"pt", " ", "T"}], " ", "-", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"pg", "+", "Tgv"}], ")"}], " ", "gv"}]}], ")"}], " ", "/", 
+      "pt"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"xev", "=", " ", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"-", "p"}], "  ", "+", " ", "Rv", " ", "+", " ", 
+        RowBox[{"pt", " ", "T"}], " ", "-", " ", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"pe", "+", "Tev"}], ")"}], " ", "eev"}]}], ")"}], "/", 
+      "pt"}]}], ";", " ", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"Indirect", " ", "utility"}], " ", "*)"}], "\[IndentingNewLine]",
+     "\[IndentingNewLine]", 
+    RowBox[{"Lgv", "=", " ", 
+     RowBox[{"xgv", " ", "+", 
+      RowBox[{"kg", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"gv", "^", 
+           RowBox[{"(", 
+            RowBox[{"1", "-", "\[Gamma]g"}], ")"}]}], "-", "1"}], ")"}], "/", 
+        
+        RowBox[{"(", 
+         RowBox[{"1", "-", "\[Gamma]g"}], ")"}]}]}]}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Lev", "=", " ", 
+     RowBox[{"xev", " ", "+", " ", 
+      RowBox[{"ke", " ", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"eev", "^", 
+           RowBox[{"(", 
+            RowBox[{"1", "-", "\[Gamma]e"}], ")"}]}], "-", "1"}], ")"}], "/", 
+        
+        RowBox[{"(", 
+         RowBox[{"1", "-", "\[Gamma]e"}], ")"}]}]}], "+", "A"}]}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+     "Expected", " ", "welfare", " ", "without", " ", "externalties"}], " ", 
+     "*)"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"Wv", "=", 
+     RowBox[{"\[Mu]", " ", 
+      RowBox[{"Log", "[", 
+       RowBox[{
+        RowBox[{"Exp", "[", 
+         RowBox[{"Lgv", "/", "\[Mu]"}], "]"}], "+", 
+        RowBox[{"Exp", "[", 
+         RowBox[{"Lev", "/", "\[Mu]"}], "]"}]}], "]"}]}]}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+     "Probability", " ", "of", " ", "selecting", " ", "electric", " ", 
+      "car"}], " ", "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+     "Use", " ", "simplify", " ", "to", " ", "eliminate", " ", "R", " ", 
+      "term", " ", "in", " ", "pi"}], " ", "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"It", " ", "cancels", " ", 
+      RowBox[{"out", " ", "!"}]}], "*)"}], "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{"piv", "=", 
+     RowBox[{"Simplify", "[", 
+      RowBox[{
+       RowBox[{"Exp", "[", 
+        RowBox[{"Lgv", "/", "\[Mu]"}], "]"}], "/", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"Exp", "[", 
+          RowBox[{"Lgv", "/", "\[Mu]"}], "]"}], "+", 
+         RowBox[{"Exp", "[", 
+          RowBox[{"Lev", "/", "\[Mu]"}], "]"}]}], ")"}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"Government", " ", "Revenue"}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"Rv", "=", 
+      RowBox[{
+       RowBox[{"tg", " ", "pi", " ", "g"}], " ", "+", " ", 
+       RowBox[{"te", " ", 
+        RowBox[{"(", 
+         RowBox[{"1", "-", "pi"}], ")"}], " ", "e"}]}]}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"For", "[", 
+     RowBox[{
+      RowBox[{"k", "=", "1"}], ",", 
+      RowBox[{"k", "\[LessEqual]", "m"}], ",", " ", 
+      RowBox[{"k", "++"}], ",", 
+      RowBox[{
+       RowBox[{"R", "[", "k", "]"}], "=", " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"tg", "[", "k", "]"}], " ", 
+         RowBox[{"piv", "[", 
+          RowBox[{"[", "k", "]"}], "]"}], " ", 
+         RowBox[{"gv", "[", 
+          RowBox[{"[", "k", "]"}], "]"}]}], " ", "+", " ", 
+        RowBox[{
+         RowBox[{"te", "[", "k", "]"}], 
+         RowBox[{"(", 
+          RowBox[{"1", "-", 
+           RowBox[{"piv", "[", 
+            RowBox[{"[", "k", "]"}], "]"}]}], ")"}], 
+         RowBox[{"eev", "[", 
+          RowBox[{"[", "k", "]"}], "]"}]}]}]}]}], " ", "]"}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"Welfare", " ", "with", " ", "externaltieis"}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"Welfv", " ", "=", " ", 
+     RowBox[{"Wv", " ", "-", " ", 
+      RowBox[{"\[Delta]gv", " ", "piv", " ", "gv"}], " ", "-", " ", 
+      RowBox[{"\[Delta]ev", " ", 
+       RowBox[{"(", 
+        RowBox[{"1", "-", "piv"}], ")"}], " ", "eev"}]}]}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"Optimal", " ", "region", " ", "specific", " ", "taxes"}], " ", 
+     "*)"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"tgoptv", "=", "\[Delta]gv"}], " ", ";", "\[IndentingNewLine]", 
+    RowBox[{"teoptv", "=", " ", "\[Delta]ev"}], " ", ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"Optimal", " ", "federal", " ", "taxes"}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"singletg", "=", 
+     RowBox[{"\[Delta]gv", ".", " ", "weight"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"singlete", "=", 
+     RowBox[{"\[Delta]ev", " ", ".", "weight"}]}], ";", "\[IndentingNewLine]",
+     "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+     "Welfare", " ", "at", " ", "optimal", " ", "region", " ", "specific", 
+      " ", "taxes"}], " ", "*)"}], "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{"For", " ", "[", 
+     RowBox[{
+      RowBox[{"k", "=", "1"}], ",", 
+      RowBox[{"k", "\[LessEqual]", " ", "m"}], ",", " ", 
+      RowBox[{"k", "++"}], ",", " ", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"tg", "[", "k", "]"}], "=", 
+        RowBox[{"tgoptv", "[", 
+         RowBox[{"[", "k", "]"}], "]"}]}], ";", 
+       RowBox[{
+        RowBox[{"te", "[", "k", "]"}], "=", 
+        RowBox[{"teoptv", "[", 
+         RowBox[{"[", "k", "]"}], "]"}]}]}]}], " ", "]"}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"optwel", "=", 
+     RowBox[{"Welfv", " ", ".", " ", "weight"}]}], ";", "\[IndentingNewLine]",
+     "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+     "Find", " ", "Optimal", " ", "Regional", " ", "Gas", " ", "tax", " ", 
+      "only"}], " ", "*)"}], "\[IndentingNewLine]", 
+    RowBox[{"gastaxv", "=", 
+     RowBox[{"ConstantArray", "[", 
+      RowBox[{"0", ",", "m"}], "]"}]}], ";", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"For", " ", "[", 
+     RowBox[{
+      RowBox[{"k", "=", "1"}], ",", 
+      RowBox[{"k", "\[LessEqual]", " ", "m"}], ",", " ", 
+      RowBox[{"k", "++"}], ",", " ", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"te", "[", "k", "]"}], "=", "bestt"}], ";", 
+       RowBox[{
+        RowBox[{"tg", "[", "k", "]"}], "=", "0"}], " ", ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"ansr", "=", " ", 
+        RowBox[{"NMaximize", "[", 
+         RowBox[{
+          RowBox[{"Welfv", "[", 
+           RowBox[{"[", "k", "]"}], "]"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"bestt", ",", "0", ",", 
+            RowBox[{"\[Delta]ev", "[", 
+             RowBox[{"[", "k", "]"}], "]"}]}], "}"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", " ", 
+        RowBox[{
+         RowBox[{"Print", "[", "ansr", "]"}], ";"}], "*)"}], 
+       "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"gastaxv", "[", 
+         RowBox[{"[", "k", "]"}], "]"}], "=", 
+        RowBox[{"Simplify", "[", 
+         RowBox[{"bestt", "/.", 
+          RowBox[{"Last", "[", "ansr", "]"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{"Print", "[", 
+          RowBox[{"\"\<Region \>\"", ",", "k"}], "]"}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"Print", "[", 
+          RowBox[{"\"\<Optimal Gas and Electric Tax \>\"", ",", 
+           RowBox[{"\[Delta]gv", "[", 
+            RowBox[{"[", "k", "]"}], "]"}], ",", "\"\< \>\"", ",", 
+           RowBox[{"\[Delta]ev", "[", 
+            RowBox[{"[", "k", "]"}], "]"}]}], "]"}], ";", 
+         "\[IndentingNewLine]", 
+         RowBox[{"Print", "[", 
+          RowBox[{"\"\<Optimal Single electric Tax \>\"", ",", " ", 
+           RowBox[{"gastaxv", "[", 
+            RowBox[{"[", "k", "]"}], "]"}]}], "]"}], ";"}], " ", "*)"}], 
+       "\[IndentingNewLine]", 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Mod", "[", 
+           RowBox[{"k", ",", "100"}], "]"}], "\[Equal]", " ", "0"}], ",", 
+         RowBox[{"Print", "[", 
+          RowBox[{"\"\<working on county \>\"", ",", "k"}], "]"}]}], "]"}], 
+       ";", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"te", "[", "k", "]"}], "=", 
+        RowBox[{"gastaxv", "[", 
+         RowBox[{"[", "k", "]"}], "]"}]}], ";"}]}], "]"}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"welregion", "=", 
+     RowBox[{"Welfv", ".", "weight"}]}], ";", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+      RowBox[{"Print", "[", 
+       RowBox[{
+       "\"\<Welfare from optimal regional gas tax only \>\"", ",", 
+        "welregion"}], "]"}], ";"}], "*)"}], "\[IndentingNewLine]", "\n", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+     "Welfare", " ", "at", " ", "optimal", " ", "federal", " ", "tax"}], " ", 
+     "*)"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"For", " ", "[", 
+     RowBox[{
+      RowBox[{"k", "=", "1"}], ",", 
+      RowBox[{"k", "\[LessEqual]", " ", "m"}], ",", " ", 
+      RowBox[{"k", "++"}], ",", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"tg", "[", "k", "]"}], "=", "singletg"}], ";", 
+       RowBox[{
+        RowBox[{"te", "[", "k", "]"}], "=", "singlete"}]}]}], "]"}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"singwel", "=", 
+     RowBox[{"Welfv", ".", "weight"}]}], ";", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+      RowBox[{"Print", "[", 
+       RowBox[{"\"\<optwelt with single  taxes \>\"", ",", "optwelt"}], "]"}],
+       ";"}], "*)"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"Welfare", " ", ",", "  ", 
+      RowBox[{
+      "at", " ", "optimal", " ", "federal", "  ", "gas", "  ", "tax", " ", 
+       "only"}]}], "  ", "*)"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"For", " ", "[", 
+     RowBox[{
+      RowBox[{"k", "=", "1"}], ",", 
+      RowBox[{"k", "\[LessEqual]", " ", "m"}], ",", " ", 
+      RowBox[{"k", "++"}], ",", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"te", "[", "k", "]"}], "=", "bestt"}], ";", 
+       RowBox[{
+        RowBox[{"tg", "[", "k", "]"}], "=", "0"}]}]}], "]"}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"temp", "=", " ", 
+     RowBox[{"NMaximize", "[", 
+      RowBox[{
+       RowBox[{"Welfv", " ", ".", " ", "weight"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"bestt", ",", "0", ",", 
+         RowBox[{"\[Delta]ev", ".", " ", "weight"}]}], "}"}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+      RowBox[{"Print", "[", "temp", "]"}], ";"}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"welonetax", "=", 
+     RowBox[{"First", "[", "temp", "]"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"gtax", "=", 
+     RowBox[{"Simplify", "[", 
+      RowBox[{"bestt", "/.", 
+       RowBox[{"Last", "[", "temp", "]"}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+      RowBox[{"Print", "[", "\"\<Optimal taxes, from formula\>\"", "]"}], ";",
+       "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", 
+       RowBox[{"\[Delta]gv", ".", " ", "weight"}], "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", 
+       RowBox[{"\[Delta]ev", ".", " ", "weight"}], "]"}], ";"}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+      RowBox[{"singwel", " ", "=", 
+       RowBox[{"First", "[", 
+        RowBox[{"NMaximize", "[", 
+         RowBox[{
+          RowBox[{"Welfv", " ", ".", " ", "weight"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"bestt", ",", "0", ",", 
+            RowBox[{"\[Delta]gv", ".", " ", "weight"}]}], "}"}]}], "]"}], 
+        "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "singwel", "]"}], ";"}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+      RowBox[{
+      "Welfare", " ", "at", " ", "optimal", " ", "single", " ", "tax"}], ",", 
+      " ", 
+      RowBox[{"verified", " ", "numerically"}]}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+      RowBox[{"For", " ", "[", 
+       RowBox[{
+        RowBox[{"k", "=", "1"}], ",", 
+        RowBox[{"k", "\[LessEqual]", " ", "m"}], ",", " ", 
+        RowBox[{"k", "++"}], ",", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"tg", "[", "k", "]"}], "=", "bestt"}], ";", 
+         RowBox[{
+          RowBox[{"te", "[", "k", "]"}], "=", "beste"}]}]}], "]"}], ";", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{"temp1", "=", " ", 
+       RowBox[{"NMaximize", "[", 
+        RowBox[{
+         RowBox[{"Welfv", " ", ".", " ", "weight"}], ",", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"bestt", ",", "0", ",", 
+             RowBox[{"\[Delta]gv", ".", " ", "weight"}]}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"beste", ",", "0", ",", 
+             RowBox[{"\[Delta]ev", ".", " ", "weight"}]}], "}"}]}], "}"}]}], 
+        "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{
+      "Print", "[", "\"\<optimal taxes verified numerically \>\"", "]"}], ";",
+       "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "temp1", "]"}]}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Simplify", "[", 
+        RowBox[{"bestt", "/.", 
+         RowBox[{"Last", "[", "temp1", "]"}]}], "]"}], "/", 
+       RowBox[{"\[Delta]gv", ".", " ", "weight"}]}], "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"Simplify", "[", 
+        RowBox[{"beste", "/.", 
+         RowBox[{"Last", "[", "temp1", "]"}]}], "]"}], "/", 
+       RowBox[{"\[Delta]ev", ".", " ", "weight"}]}]}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{
+      RowBox[{"pisingle", "=", 
+       RowBox[{"First", "[", 
+        RowBox[{"Simplify", "[", "piv", "]"}], "]"}]}], ";"}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"Exact", " ", "Welfare", " ", "Difference"}], " ", "*)"}], 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"exact", "=", " ", 
+     RowBox[{"(", 
+      RowBox[{"optwel", "-", "singwel"}], ")"}]}], ";", "\[IndentingNewLine]",
+     "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"(*", " ", 
+     RowBox[{"Display", " ", "Results"}], " ", "*)"}], "\[IndentingNewLine]", 
+    
+    RowBox[{"(*", " ", 
+     RowBox[{
+      RowBox[{"Print", "[", 
+       RowBox[{
+       "\"\<Probability at optimal single tax \>\"", ",", "pisingle"}], "]"}],
+       ";"}], " ", "*)"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", 
+     RowBox[{
+     "\"\<Welfare Gain from Differentiation, County level, taxes on both gas \
+and electric \>\"", ",", " ", 
+      RowBox[{"exact", "*", "c"}]}], "]"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", 
+     RowBox[{"\"\<Optimal Federal Tax Gas, Electric \>\"", ",", 
+      RowBox[{"singletg", "*", "c"}], ",", "\"\< \>\"", ",", " ", 
+      RowBox[{"singlete", "*", "c"}]}], "]"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", 
+     RowBox[{"\"\<Optimal Federal tax on electric only \>\"", ",", 
+      RowBox[{"gtax", "*", "c"}]}], "]"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"(*", 
+     RowBox[{
+      RowBox[{"Print", "[", 
+       RowBox[{"\"\<optwel \>\"", ",", 
+        RowBox[{"optwel", "*", "c"}]}], "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", 
+       RowBox[{"\"\<singwel \>\"", ",", 
+        RowBox[{"singwel", "*", "c"}]}], "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", 
+       RowBox[{"\"\<gas tax only welfare \>\"", ",", 
+        RowBox[{"welonetax", "*", "c"}]}], "]"}], ";"}], " ", "*)"}], 
+    "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", 
+     RowBox[{
+     "\"\<Welfare: federal gas and electric tax - welfare: federal electric \
+tax only \>\"", ",", 
+      RowBox[{
+       RowBox[{"singwel", "*", "c"}], "-", 
+       RowBox[{"welonetax", "*", "c"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", 
+     RowBox[{
+     "\"\<Welfare Gain From Differentiation, county, tax on electric only \
+\>\"", ",", 
+      RowBox[{
+       RowBox[{"welregion", "*", "c"}], "-", 
+       RowBox[{"welonetax", "*", "c"}]}]}], "]"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", 
+     RowBox[{"\"\<Welfare from federal eletric tax only \>\"", ",", 
+      RowBox[{"AccountingForm", "[", 
+       RowBox[{
+        RowBox[{"welonetax", "*", "c"}], ",", "15"}], "]"}]}], "]"}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", 
+     RowBox[{"\"\<Welfare from county level electric tax only \>\"", ",", 
+      RowBox[{"AccountingForm", "[", 
+       RowBox[{
+        RowBox[{"welregion", "*", "c"}], ",", "15"}], "]"}]}], "]"}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", 
+     RowBox[{"\"\<Welfare federal tax on gas and electric \>\"", ",", 
+      RowBox[{"AccountingForm", "[", " ", 
+       RowBox[{
+        RowBox[{"singwel", "*", "c"}], ",", "15"}], "]"}]}], "]"}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", "\"\< \>\"", "]"}], ";", "\[IndentingNewLine]", 
+    RowBox[{
+    "Print", "[", "\"\< Data for Spreadsheet - Table_welfare_vx \>\"", "]"}], 
+    ";", "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", 
+     RowBox[{"\"\<Welfare from county level electric tax only \>\"", ",", 
+      RowBox[{"AccountingForm", "[", 
+       RowBox[{
+        RowBox[{"welregion", "*", "c"}], ",", "15"}], "]"}]}], "]"}], ";", 
+    "\[IndentingNewLine]", "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", "\"\< \>\"", "]"}], ";"}]}], "\[IndentingNewLine]", 
+  "]"}]}], "Input",
+ CellChangeTimes->{{3.6128888328703003`*^9, 3.612888867954466*^9}, 
+   3.612888916562141*^9, {3.6128890632917833`*^9, 3.612889129221538*^9}, {
+   3.612889199981448*^9, 3.612889202762228*^9}, {3.6128892338500423`*^9, 
+   3.612889240471322*^9}, {3.612889291936405*^9, 3.612889314117054*^9}, {
+   3.612889372388482*^9, 3.612889389162429*^9}, {3.613128933930902*^9, 
+   3.613128957610415*^9}, {3.613129064306851*^9, 3.613129143426186*^9}, {
+   3.6131292970855923`*^9, 3.61312930587761*^9}, {3.613131563190271*^9, 
+   3.613131623439825*^9}, {3.6131316708502197`*^9, 3.613131693814973*^9}, {
+   3.613131838259191*^9, 3.6131318384484453`*^9}, {3.613132493305152*^9, 
+   3.613132496744794*^9}, {3.613134653676729*^9, 3.613134657322137*^9}, {
+   3.62065886644359*^9, 3.620658868521367*^9}, {3.6209931521373453`*^9, 
+   3.620993166185528*^9}, {3.631375021821699*^9, 3.6313750230114393`*^9}, {
+   3.631631088324636*^9, 3.631631096393755*^9}, 3.6321439295878563`*^9, {
+   3.633089283320959*^9, 3.633089289160273*^9}, {3.633090433111731*^9, 
+   3.633090456955714*^9}, {3.633090564137896*^9, 3.6330905650298443`*^9}, {
+   3.633104417003536*^9, 3.6331044451936703`*^9}, {3.633106722868342*^9, 
+   3.63310672985535*^9}, {3.633106942231958*^9, 3.6331069437986937`*^9}, {
+   3.6331071711019793`*^9, 3.633107173430842*^9}, {3.63311064282786*^9, 
+   3.6331106918972263`*^9}, {3.635002588781662*^9, 3.6350026868678493`*^9}, {
+   3.63500272358434*^9, 3.6350027416358232`*^9}, {3.635074593423367*^9, 
+   3.6350745935092897`*^9}, {3.63507704563805*^9, 3.635077045716186*^9}, {
+   3.659707674042171*^9, 3.659707734232053*^9}, {3.659707779863452*^9, 
+   3.659707809289954*^9}, {3.659713272225608*^9, 3.659713284567979*^9}, 
+   3.67455721668668*^9}],
+
+Cell[BoxData["1.02`"], "Output",
+ CellChangeTimes->{3.612889029233409*^9, 3.612889149665263*^9, 
+  3.612889242983266*^9, 3.6128893356037903`*^9, 3.612889406128991*^9, 
+  3.613128965290406*^9, 3.6131291486554003`*^9, 3.613129324347095*^9, 
+  3.6131322209170856`*^9, 3.6131326500173407`*^9, 3.613134962531152*^9, 
+  3.6217754764410763`*^9, 3.627313244713114*^9, 3.6316362968820543`*^9, 
+  3.632485297133092*^9, 3.632661728656384*^9, 3.633093270166396*^9, 
+  3.6331067356361303`*^9, 3.6331069852094593`*^9, 3.633107415868784*^9, 
+  3.633110735978633*^9, 3.635072001705905*^9, 3.635074597002861*^9, 
+  3.63507704927654*^9, 3.6597079397405367`*^9, 3.6610123843794527`*^9}],
+
+Cell[BoxData["\<\"/Users/andrewjyates/Dropbox/electric cars/welfare\"\>"], \
+"Output",
+ CellChangeTimes->{3.612889029233409*^9, 3.612889149665263*^9, 
+  3.612889242983266*^9, 3.6128893356037903`*^9, 3.612889406128991*^9, 
+  3.613128965290406*^9, 3.6131291486554003`*^9, 3.613129324347095*^9, 
+  3.6131322209170856`*^9, 3.6131326500173407`*^9, 3.613134962531152*^9, 
+  3.6217754764410763`*^9, 3.627313244713114*^9, 3.6316362968820543`*^9, 
+  3.632485297133092*^9, 3.632661728656384*^9, 3.633093270166396*^9, 
+  3.6331067356361303`*^9, 3.6331069852094593`*^9, 3.633107415868784*^9, 
+  3.633110735978633*^9, 3.635072001705905*^9, 3.635074597002861*^9, 
+  3.63507704927654*^9, 3.6597079397405367`*^9, 3.661012384491115*^9}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "100"}],
+  SequenceForm["working on county ", 100],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661012466726767*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "200"}],
+  SequenceForm["working on county ", 200],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661012509008236*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "300"}],
+  SequenceForm["working on county ", 300],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661012552151243*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "400"}],
+  SequenceForm["working on county ", 400],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610125957879677`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "500"}],
+  SequenceForm["working on county ", 500],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610126391240883`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "600"}],
+  SequenceForm["working on county ", 600],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661012682521042*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "700"}],
+  SequenceForm["working on county ", 700],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610127266300917`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "800"}],
+  SequenceForm["working on county ", 800],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661012769531205*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "900"}],
+  SequenceForm["working on county ", 900],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661012812353344*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1000"}],
+  SequenceForm["working on county ", 1000],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610128558348827`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1100"}],
+  SequenceForm["working on county ", 1100],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661012898797678*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1200"}],
+  SequenceForm["working on county ", 1200],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661012940753861*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1300"}],
+  SequenceForm["working on county ", 1300],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661012982842108*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1400"}],
+  SequenceForm["working on county ", 1400],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610130249798403`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1500"}],
+  SequenceForm["working on county ", 1500],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013066824026*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1600"}],
+  SequenceForm["working on county ", 1600],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.66101310884721*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1700"}],
+  SequenceForm["working on county ", 1700],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610131505752287`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1800"}],
+  SequenceForm["working on county ", 1800],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013192507682*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1900"}],
+  SequenceForm["working on county ", 1900],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013235229735*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2000"}],
+  SequenceForm["working on county ", 2000],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610132782107067`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2100"}],
+  SequenceForm["working on county ", 2100],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013320916676*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2200"}],
+  SequenceForm["working on county ", 2200],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610133635645437`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2300"}],
+  SequenceForm["working on county ", 2300],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013406480061*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2400"}],
+  SequenceForm["working on county ", 2400],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013449973625*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2500"}],
+  SequenceForm["working on county ", 2500],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013492688644*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2600"}],
+  SequenceForm["working on county ", 2600],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013535269787*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2700"}],
+  SequenceForm["working on county ", 2700],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610135781656303`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2800"}],
+  SequenceForm["working on county ", 2800],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610136209126596`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2900"}],
+  SequenceForm["working on county ", 2900],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013663343557*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "3000"}],
+  SequenceForm["working on county ", 3000],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013705952259*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "3100"}],
+  SequenceForm["working on county ", 3100],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013748929212*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare Gain from Differentiation, County level, taxes on both \
+gas and electric \"\>", "\[InvisibleSpace]", "10.803669452667236`"}],
+  SequenceForm[
+  "Welfare Gain from Differentiation, County level, taxes on both gas and \
+electric ", 10.803669452667236`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610137740648527`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Optimal Federal Tax Gas, Electric \"\>", "\[InvisibleSpace]", 
+   "0.01858348031236465`", "\[InvisibleSpace]", "\<\" \"\>", 
+   "\[InvisibleSpace]", "0.025884568794634938`"}],
+  SequenceForm[
+  "Optimal Federal Tax Gas, Electric ", 0.01858348031236465, " ", 
+   0.025884568794634938`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013774066867*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Optimal Federal tax on electric only \"\>", 
+   "\[InvisibleSpace]", "0.013762026754574226`"}],
+  SequenceForm["Optimal Federal tax on electric only ", 0.013762026754574226`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610137740684958`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare: federal gas and electric tax - welfare: federal \
+electric tax only \"\>", "\[InvisibleSpace]", "104.92346477508545`"}],
+  SequenceForm[
+  "Welfare: federal gas and electric tax - welfare: federal electric tax only \
+", 104.92346477508545`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013774070079*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare Gain From Differentiation, county, tax on electric \
+only \"\>", "\[InvisibleSpace]", "1.7701330184936523`"}],
+  SequenceForm[
+  "Welfare Gain From Differentiation, county, tax on electric only ", 
+   1.7701330184936523`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610137740717993`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare from federal eletric tax only \"\>", 
+   "\[InvisibleSpace]", 
+   TagBox[
+    InterpretationBox["\<\"2582259381.96619\"\>",
+     2.5822593819661922`*^9,
+     AutoDelete->True],
+    AccountingForm[#, 15]& ]}],
+  SequenceForm["Welfare from federal eletric tax only ", 
+   AccountingForm[2.5822593819661922`*^9, 15]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610137740735817`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare from county level electric tax only \"\>", 
+   "\[InvisibleSpace]", 
+   TagBox[
+    InterpretationBox["\<\"2582259383.73633\"\>",
+     2.5822593837363253`*^9,
+     AutoDelete->True],
+    AccountingForm[#, 15]& ]}],
+  SequenceForm["Welfare from county level electric tax only ", 
+   AccountingForm[2.5822593837363253`*^9, 15]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013774075379*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare federal tax on gas and electric \"\>", 
+   "\[InvisibleSpace]", 
+   TagBox[
+    InterpretationBox["\<\"2582259486.88966\"\>",
+     2.582259486889657*^9,
+     AutoDelete->True],
+    AccountingForm[#, 15]& ]}],
+  SequenceForm["Welfare federal tax on gas and electric ", 
+   AccountingForm[2.582259486889657*^9, 15]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.66101377407717*^9}],
+
+Cell[BoxData["\<\" \"\>"], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013774078751*^9}],
+
+Cell[BoxData["\<\" Data for Spreadsheet - Table_welfare_vx \"\>"], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013774080346*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare from county level electric tax only \"\>", 
+   "\[InvisibleSpace]", 
+   TagBox[
+    InterpretationBox["\<\"2582259383.73633\"\>",
+     2.5822593837363253`*^9,
+     AutoDelete->True],
+    AccountingForm[#, 15]& ]}],
+  SequenceForm["Welfare from county level electric tax only ", 
+   AccountingForm[2.5822593837363253`*^9, 15]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013774081983*^9}],
+
+Cell[BoxData["\<\" \"\>"], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013774083531*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "100"}],
+  SequenceForm["working on county ", 100],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013852536028*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"NMaximize", "::", "cvmit"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Failed to converge to the requested accuracy or precision \
+within \[NoBreak]\\!\\(100\\)\[NoBreak] iterations. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/NMaximize\\\", ButtonNote -> \
+\\\"NMaximize::cvmit\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6350762249353533`*^9, 3.6350773555096073`*^9, 
+  3.659708601396596*^9, 3.6610138539576178`*^9}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "200"}],
+  SequenceForm["working on county ", 200],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610138939224167`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "300"}],
+  SequenceForm["working on county ", 300],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013935170905*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "400"}],
+  SequenceForm["working on county ", 400],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661013979864113*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "500"}],
+  SequenceForm["working on county ", 500],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610140180188828`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "600"}],
+  SequenceForm["working on county ", 600],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661014058994774*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "700"}],
+  SequenceForm["working on county ", 700],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661014100184647*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "800"}],
+  SequenceForm["working on county ", 800],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661014141369632*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "900"}],
+  SequenceForm["working on county ", 900],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661014182488501*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1000"}],
+  SequenceForm["working on county ", 1000],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661014224531434*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1100"}],
+  SequenceForm["working on county ", 1100],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.66101426745109*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1200"}],
+  SequenceForm["working on county ", 1200],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610143105099087`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1300"}],
+  SequenceForm["working on county ", 1300],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661014353110971*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"NMaximize", "::", "cvmit"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Failed to converge to the requested accuracy or precision \
+within \[NoBreak]\\!\\(100\\)\[NoBreak] iterations. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/NMaximize\\\", ButtonNote -> \
+\\\"NMaximize::cvmit\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6350762249353533`*^9, 3.6350773555096073`*^9, 
+  3.659708601396596*^9, 3.661014380903092*^9}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1400"}],
+  SequenceForm["working on county ", 1400],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610143964095497`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1500"}],
+  SequenceForm["working on county ", 1500],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610144392191343`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1600"}],
+  SequenceForm["working on county ", 1600],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661014482398855*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1700"}],
+  SequenceForm["working on county ", 1700],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661014525373945*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1800"}],
+  SequenceForm["working on county ", 1800],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661014568639866*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1900"}],
+  SequenceForm["working on county ", 1900],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.66101461096533*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2000"}],
+  SequenceForm["working on county ", 2000],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661014653358922*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2100"}],
+  SequenceForm["working on county ", 2100],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610146957776613`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2200"}],
+  SequenceForm["working on county ", 2200],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661014738997095*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2300"}],
+  SequenceForm["working on county ", 2300],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610147814240217`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2400"}],
+  SequenceForm["working on county ", 2400],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610148229862003`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2500"}],
+  SequenceForm["working on county ", 2500],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661014864254074*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2600"}],
+  SequenceForm["working on county ", 2600],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661014905438015*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2700"}],
+  SequenceForm["working on county ", 2700],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661014947114376*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2800"}],
+  SequenceForm["working on county ", 2800],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610149890799713`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2900"}],
+  SequenceForm["working on county ", 2900],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015032039969*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "3000"}],
+  SequenceForm["working on county ", 3000],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015074832343*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "3100"}],
+  SequenceForm["working on county ", 3100],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015116960202*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare Gain from Differentiation, County level, taxes on both \
+gas and electric \"\>", "\[InvisibleSpace]", "12.7024507522583`"}],
+  SequenceForm[
+  "Welfare Gain from Differentiation, County level, taxes on both gas and \
+electric ", 12.7024507522583],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015141160063*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Optimal Federal Tax Gas, Electric \"\>", "\[InvisibleSpace]", 
+   "0.01858348031236465`", "\[InvisibleSpace]", "\<\" \"\>", 
+   "\[InvisibleSpace]", "0.025884568794634938`"}],
+  SequenceForm[
+  "Optimal Federal Tax Gas, Electric ", 0.01858348031236465, " ", 
+   0.025884568794634938`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015141163615*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Optimal Federal tax on electric only \"\>", 
+   "\[InvisibleSpace]", "0.01372893238542081`"}],
+  SequenceForm["Optimal Federal tax on electric only ", 0.01372893238542081],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015141165419*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare: federal gas and electric tax - welfare: federal \
+electric tax only \"\>", "\[InvisibleSpace]", "105.30239486694336`"}],
+  SequenceForm[
+  "Welfare: federal gas and electric tax - welfare: federal electric tax only \
+", 105.30239486694336`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015141166971*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare Gain From Differentiation, county, tax on electric \
+only \"\>", "\[InvisibleSpace]", "3.5518274307250977`"}],
+  SequenceForm[
+  "Welfare Gain From Differentiation, county, tax on electric only ", 
+   3.5518274307250977`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.66101514116859*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare from federal eletric tax only \"\>", 
+   "\[InvisibleSpace]", 
+   TagBox[
+    InterpretationBox["\<\"2582259479.779\"\>",
+     2.582259479779001*^9,
+     AutoDelete->True],
+    AccountingForm[#, 15]& ]}],
+  SequenceForm["Welfare from federal eletric tax only ", 
+   AccountingForm[2.582259479779001*^9, 15]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.66101514117027*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare from county level electric tax only \"\>", 
+   "\[InvisibleSpace]", 
+   TagBox[
+    InterpretationBox["\<\"2582259483.33083\"\>",
+     2.5822594833308287`*^9,
+     AutoDelete->True],
+    AccountingForm[#, 15]& ]}],
+  SequenceForm["Welfare from county level electric tax only ", 
+   AccountingForm[2.5822594833308287`*^9, 15]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015141172117*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare federal tax on gas and electric \"\>", 
+   "\[InvisibleSpace]", 
+   TagBox[
+    InterpretationBox["\<\"2582259585.0814\"\>",
+     2.582259585081396*^9,
+     AutoDelete->True],
+    AccountingForm[#, 15]& ]}],
+  SequenceForm["Welfare federal tax on gas and electric ", 
+   AccountingForm[2.582259585081396*^9, 15]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015141173958*^9}],
+
+Cell[BoxData["\<\" \"\>"], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610151411756563`*^9}],
+
+Cell[BoxData["\<\" Data for Spreadsheet - Table_welfare_vx \"\>"], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015141177238*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare from county level electric tax only \"\>", 
+   "\[InvisibleSpace]", 
+   TagBox[
+    InterpretationBox["\<\"2582259483.33083\"\>",
+     2.5822594833308287`*^9,
+     AutoDelete->True],
+    AccountingForm[#, 15]& ]}],
+  SequenceForm["Welfare from county level electric tax only ", 
+   AccountingForm[2.5822594833308287`*^9, 15]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.66101514117953*^9}],
+
+Cell[BoxData["\<\" \"\>"], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015141181202*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "100"}],
+  SequenceForm["working on county ", 100],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015222013166*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "200"}],
+  SequenceForm["working on county ", 200],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015263943884*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "300"}],
+  SequenceForm["working on county ", 300],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610153058891983`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "400"}],
+  SequenceForm["working on county ", 400],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610153477675467`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "500"}],
+  SequenceForm["working on county ", 500],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610153893265543`*^9}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"NMaximize", "::", "cvmit"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Failed to converge to the requested accuracy or precision \
+within \[NoBreak]\\!\\(100\\)\[NoBreak] iterations. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/NMaximize\\\", ButtonNote -> \
+\\\"NMaximize::cvmit\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6350762249353533`*^9, 3.6350773555096073`*^9, 
+  3.659708601396596*^9, 3.661015399047278*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(NMaximize \
+:: cvmit\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.6350762249353533`*^9, 3.6350773555096073`*^9, 
+  3.659708601396596*^9, 3.6610153990877132`*^9}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "600"}],
+  SequenceForm["working on county ", 600],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610154311681347`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "700"}],
+  SequenceForm["working on county ", 700],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610154729845753`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "800"}],
+  SequenceForm["working on county ", 800],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015514685712*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "900"}],
+  SequenceForm["working on county ", 900],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.66101555638281*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1000"}],
+  SequenceForm["working on county ", 1000],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015598066741*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1100"}],
+  SequenceForm["working on county ", 1100],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015639759139*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1200"}],
+  SequenceForm["working on county ", 1200],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015681705834*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1300"}],
+  SequenceForm["working on county ", 1300],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015724208932*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1400"}],
+  SequenceForm["working on county ", 1400],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015766867628*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1500"}],
+  SequenceForm["working on county ", 1500],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610158107171497`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1600"}],
+  SequenceForm["working on county ", 1600],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610158534486227`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1700"}],
+  SequenceForm["working on county ", 1700],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610158961108227`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1800"}],
+  SequenceForm["working on county ", 1800],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.66101593808285*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "1900"}],
+  SequenceForm["working on county ", 1900],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661015980183013*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2000"}],
+  SequenceForm["working on county ", 2000],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610160221937017`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2100"}],
+  SequenceForm["working on county ", 2100],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661016065308363*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2200"}],
+  SequenceForm["working on county ", 2200],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610161079375772`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2300"}],
+  SequenceForm["working on county ", 2300],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661016150542717*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2400"}],
+  SequenceForm["working on county ", 2400],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610161938397417`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2500"}],
+  SequenceForm["working on county ", 2500],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661016236510414*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2600"}],
+  SequenceForm["working on county ", 2600],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661016278651881*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2700"}],
+  SequenceForm["working on county ", 2700],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661016321581994*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2800"}],
+  SequenceForm["working on county ", 2800],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610163642269697`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "2900"}],
+  SequenceForm["working on county ", 2900],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661016407248281*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "3000"}],
+  SequenceForm["working on county ", 3000],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.66101644979146*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"working on county \"\>", "\[InvisibleSpace]", "3100"}],
+  SequenceForm["working on county ", 3100],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661016492363201*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare Gain from Differentiation, County level, taxes on both \
+gas and electric \"\>", "\[InvisibleSpace]", "18.47693634033203`"}],
+  SequenceForm[
+  "Welfare Gain from Differentiation, County level, taxes on both gas and \
+electric ", 18.47693634033203],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.66101651642133*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Optimal Federal Tax Gas, Electric \"\>", "\[InvisibleSpace]", 
+   "0.01858348031236465`", "\[InvisibleSpace]", "\<\" \"\>", 
+   "\[InvisibleSpace]", "0.025884568794634938`"}],
+  SequenceForm[
+  "Optimal Federal Tax Gas, Electric ", 0.01858348031236465, " ", 
+   0.025884568794634938`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610165164232693`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Optimal Federal tax on electric only \"\>", 
+   "\[InvisibleSpace]", "0.013637420124545054`"}],
+  SequenceForm["Optimal Federal tax on electric only ", 0.013637420124545054`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661016516424856*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare: federal gas and electric tax - welfare: federal \
+electric tax only \"\>", "\[InvisibleSpace]", "106.48042678833008`"}],
+  SequenceForm[
+  "Welfare: federal gas and electric tax - welfare: federal electric tax only \
+", 106.48042678833008`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661016516426425*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare Gain From Differentiation, county, tax on electric \
+only \"\>", "\[InvisibleSpace]", "8.97241497039795`"}],
+  SequenceForm[
+  "Welfare Gain From Differentiation, county, tax on electric only ", 
+   8.97241497039795],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661016516427987*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare from federal eletric tax only \"\>", 
+   "\[InvisibleSpace]", 
+   TagBox[
+    InterpretationBox["\<\"2582259760.43569\"\>",
+     2.582259760435691*^9,
+     AutoDelete->True],
+    AccountingForm[#, 15]& ]}],
+  SequenceForm["Welfare from federal eletric tax only ", 
+   AccountingForm[2.582259760435691*^9, 15]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661016516429557*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare from county level electric tax only \"\>", 
+   "\[InvisibleSpace]", 
+   TagBox[
+    InterpretationBox["\<\"2582259769.40811\"\>",
+     2.582259769408106*^9,
+     AutoDelete->True],
+    AccountingForm[#, 15]& ]}],
+  SequenceForm["Welfare from county level electric tax only ", 
+   AccountingForm[2.582259769408106*^9, 15]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610165164311247`*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare federal tax on gas and electric \"\>", 
+   "\[InvisibleSpace]", 
+   TagBox[
+    InterpretationBox["\<\"2582259866.91612\"\>",
+     2.5822598669161177`*^9,
+     AutoDelete->True],
+    AccountingForm[#, 15]& ]}],
+  SequenceForm["Welfare federal tax on gas and electric ", 
+   AccountingForm[2.5822598669161177`*^9, 15]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.6610165164330063`*^9}],
+
+Cell[BoxData["\<\" \"\>"], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661016516434535*^9}],
+
+Cell[BoxData["\<\" Data for Spreadsheet - Table_welfare_vx \"\>"], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661016516435965*^9}],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Welfare from county level electric tax only \"\>", 
+   "\[InvisibleSpace]", 
+   TagBox[
+    InterpretationBox["\<\"2582259769.40811\"\>",
+     2.582259769408106*^9,
+     AutoDelete->True],
+    AccountingForm[#, 15]& ]}],
+  SequenceForm["Welfare from county level electric tax only ", 
+   AccountingForm[2.582259769408106*^9, 15]],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661016516437499*^9}],
+
+Cell[BoxData["\<\" \"\>"], "Print",
+ CellChangeTimes->{3.613132807333096*^9, 3.6131351261687107`*^9, 
+  3.6217756420571537`*^9, 3.627313418340513*^9, 3.631636464936309*^9, 
+  3.6324854633610373`*^9, 3.632661892986484*^9, 3.633093437513481*^9, 
+  3.633106875241329*^9, 3.6331071251251707`*^9, 3.633107580447617*^9, 
+  3.6331108516838923`*^9, 3.635072114854928*^9, 3.635074710798884*^9, 
+  3.635077162772915*^9, 3.6597080204066668`*^9, 3.661016516438992*^9}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{740, 848},
+WindowMargins->{{-2, Automatic}, {Automatic, 0}},
+FrontEndVersion->"10.1 for Mac OS X x86 (32-bit, 64-bit Kernel) (March 23, \
+2015)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[579, 22, 38681, 923, 5044, "Input"],
+Cell[39263, 947, 667, 9, 28, "Output"],
+Cell[39933, 958, 719, 10, 28, "Output"],
+Cell[CellGroupData[{
+Cell[40677, 972, 597, 10, 22, "Print"],
+Cell[41277, 984, 597, 10, 22, "Print"],
+Cell[41877, 996, 597, 10, 22, "Print"],
+Cell[42477, 1008, 599, 10, 22, "Print"],
+Cell[43079, 1020, 599, 10, 22, "Print"],
+Cell[43681, 1032, 597, 10, 22, "Print"],
+Cell[44281, 1044, 599, 10, 22, "Print"],
+Cell[44883, 1056, 597, 10, 22, "Print"],
+Cell[45483, 1068, 597, 10, 22, "Print"],
+Cell[46083, 1080, 601, 10, 22, "Print"],
+Cell[46687, 1092, 599, 10, 22, "Print"],
+Cell[47289, 1104, 599, 10, 22, "Print"],
+Cell[47891, 1116, 599, 10, 22, "Print"],
+Cell[48493, 1128, 601, 10, 22, "Print"],
+Cell[49097, 1140, 599, 10, 22, "Print"],
+Cell[49699, 1152, 598, 10, 22, "Print"],
+Cell[50300, 1164, 601, 10, 22, "Print"],
+Cell[50904, 1176, 599, 10, 22, "Print"],
+Cell[51506, 1188, 599, 10, 22, "Print"],
+Cell[52108, 1200, 601, 10, 22, "Print"],
+Cell[52712, 1212, 599, 10, 22, "Print"],
+Cell[53314, 1224, 601, 10, 22, "Print"],
+Cell[53918, 1236, 599, 10, 22, "Print"],
+Cell[54520, 1248, 599, 10, 22, "Print"],
+Cell[55122, 1260, 599, 10, 22, "Print"],
+Cell[55724, 1272, 599, 10, 22, "Print"],
+Cell[56326, 1284, 601, 10, 22, "Print"],
+Cell[56930, 1296, 601, 10, 22, "Print"],
+Cell[57534, 1308, 599, 10, 22, "Print"],
+Cell[58136, 1320, 599, 10, 22, "Print"],
+Cell[58738, 1332, 599, 10, 22, "Print"],
+Cell[59340, 1344, 762, 13, 22, "Print"],
+Cell[60105, 1359, 785, 14, 22, "Print"],
+Cell[60893, 1375, 677, 11, 22, "Print"],
+Cell[61573, 1388, 750, 13, 22, "Print"],
+Cell[62326, 1403, 732, 13, 22, "Print"],
+Cell[63061, 1418, 824, 17, 22, "Print"],
+Cell[63888, 1437, 834, 17, 22, "Print"],
+Cell[64725, 1456, 821, 17, 22, "Print"],
+Cell[65549, 1475, 456, 6, 21, "Print"],
+Cell[66008, 1483, 496, 6, 22, "Print"],
+Cell[66507, 1491, 834, 17, 22, "Print"],
+Cell[67344, 1510, 456, 6, 21, "Print"],
+Cell[67803, 1518, 597, 10, 22, "Print"]
+}, Open  ]],
+Cell[68415, 1531, 561, 11, 24, "Message"],
+Cell[CellGroupData[{
+Cell[69001, 1546, 599, 10, 22, "Print"],
+Cell[69603, 1558, 597, 10, 22, "Print"],
+Cell[70203, 1570, 597, 10, 22, "Print"],
+Cell[70803, 1582, 599, 10, 22, "Print"],
+Cell[71405, 1594, 597, 10, 22, "Print"],
+Cell[72005, 1606, 597, 10, 22, "Print"],
+Cell[72605, 1618, 597, 10, 22, "Print"],
+Cell[73205, 1630, 597, 10, 22, "Print"],
+Cell[73805, 1642, 599, 10, 22, "Print"],
+Cell[74407, 1654, 598, 10, 22, "Print"],
+Cell[75008, 1666, 601, 10, 22, "Print"],
+Cell[75612, 1678, 599, 10, 22, "Print"]
+}, Open  ]],
+Cell[76226, 1691, 559, 11, 24, "Message"],
+Cell[CellGroupData[{
+Cell[76810, 1706, 601, 10, 22, "Print"],
+Cell[77414, 1718, 601, 10, 22, "Print"],
+Cell[78018, 1730, 599, 10, 22, "Print"],
+Cell[78620, 1742, 599, 10, 22, "Print"],
+Cell[79222, 1754, 599, 10, 22, "Print"],
+Cell[79824, 1766, 598, 10, 22, "Print"],
+Cell[80425, 1778, 599, 10, 22, "Print"],
+Cell[81027, 1790, 601, 10, 22, "Print"],
+Cell[81631, 1802, 599, 10, 22, "Print"],
+Cell[82233, 1814, 601, 10, 22, "Print"],
+Cell[82837, 1826, 601, 10, 22, "Print"],
+Cell[83441, 1838, 599, 10, 22, "Print"],
+Cell[84043, 1850, 599, 10, 22, "Print"],
+Cell[84645, 1862, 599, 10, 22, "Print"],
+Cell[85247, 1874, 601, 10, 22, "Print"],
+Cell[85851, 1886, 599, 10, 22, "Print"],
+Cell[86453, 1898, 599, 10, 22, "Print"],
+Cell[87055, 1910, 599, 10, 22, "Print"],
+Cell[87657, 1922, 755, 13, 22, "Print"],
+Cell[88415, 1937, 785, 14, 22, "Print"],
+Cell[89203, 1953, 672, 11, 22, "Print"],
+Cell[89878, 1966, 750, 13, 22, "Print"],
+Cell[90631, 1981, 729, 13, 22, "Print"],
+Cell[91363, 1996, 815, 17, 22, "Print"],
+Cell[92181, 2015, 834, 17, 22, "Print"],
+Cell[93018, 2034, 821, 17, 22, "Print"],
+Cell[93842, 2053, 458, 6, 21, "Print"],
+Cell[94303, 2061, 496, 6, 22, "Print"],
+Cell[94802, 2069, 833, 17, 22, "Print"],
+Cell[95638, 2088, 456, 6, 21, "Print"],
+Cell[96097, 2096, 597, 10, 22, "Print"],
+Cell[96697, 2108, 597, 10, 22, "Print"],
+Cell[97297, 2120, 599, 10, 22, "Print"],
+Cell[97899, 2132, 599, 10, 22, "Print"],
+Cell[98501, 2144, 599, 10, 22, "Print"]
+}, Open  ]],
+Cell[99115, 2157, 559, 11, 24, "Message"],
+Cell[99677, 2170, 608, 12, 24, "Message"],
+Cell[CellGroupData[{
+Cell[100310, 2186, 599, 10, 22, "Print"],
+Cell[100912, 2198, 599, 10, 22, "Print"],
+Cell[101514, 2210, 597, 10, 22, "Print"],
+Cell[102114, 2222, 596, 10, 22, "Print"],
+Cell[102713, 2234, 599, 10, 22, "Print"],
+Cell[103315, 2246, 599, 10, 22, "Print"],
+Cell[103917, 2258, 599, 10, 22, "Print"],
+Cell[104519, 2270, 599, 10, 22, "Print"],
+Cell[105121, 2282, 599, 10, 22, "Print"],
+Cell[105723, 2294, 601, 10, 22, "Print"],
+Cell[106327, 2306, 601, 10, 22, "Print"],
+Cell[106931, 2318, 601, 10, 22, "Print"],
+Cell[107535, 2330, 598, 10, 22, "Print"],
+Cell[108136, 2342, 599, 10, 22, "Print"],
+Cell[108738, 2354, 601, 10, 22, "Print"],
+Cell[109342, 2366, 599, 10, 22, "Print"],
+Cell[109944, 2378, 601, 10, 22, "Print"],
+Cell[110548, 2390, 599, 10, 22, "Print"],
+Cell[111150, 2402, 601, 10, 22, "Print"],
+Cell[111754, 2414, 599, 10, 22, "Print"],
+Cell[112356, 2426, 599, 10, 22, "Print"],
+Cell[112958, 2438, 599, 10, 22, "Print"],
+Cell[113560, 2450, 601, 10, 22, "Print"],
+Cell[114164, 2462, 599, 10, 22, "Print"],
+Cell[114766, 2474, 598, 10, 22, "Print"],
+Cell[115367, 2486, 599, 10, 22, "Print"],
+Cell[115969, 2498, 756, 13, 22, "Print"],
+Cell[116728, 2513, 787, 14, 22, "Print"],
+Cell[117518, 2529, 675, 11, 22, "Print"],
+Cell[118196, 2542, 750, 13, 22, "Print"],
+Cell[118949, 2557, 725, 13, 22, "Print"],
+Cell[119677, 2572, 818, 17, 22, "Print"],
+Cell[120498, 2591, 832, 17, 22, "Print"],
+Cell[121333, 2610, 828, 17, 22, "Print"],
+Cell[122164, 2629, 456, 6, 21, "Print"],
+Cell[122623, 2637, 496, 6, 22, "Print"],
+Cell[123122, 2645, 830, 17, 22, "Print"],
+Cell[123955, 2664, 456, 6, 21, "Print"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
